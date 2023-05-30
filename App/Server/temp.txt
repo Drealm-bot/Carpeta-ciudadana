@@ -1,0 +1,4 @@
+sudo docker run --name ciucap -e POSTGRES_USER=user -e POSTGRES_PASSWORD=secret -p 5432:5432 -d postgres
+sudo docker exec -it ciucap bash
+    psql -U user --password
+    CREATE DATABASE ciucap;

@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	database "github.com/Drealm-bot/Carpeta-ciudadana.git/Database"
@@ -23,10 +25,12 @@ type validateCitizen struct {
 }
 
 func ReturnUser(c echo.Context) error {
-	u := &models.User{
-		Name:  "Jon",
-		Email: "jon@labstack.com",
+	u := new(models.User)
+
+	if err := c.Bind(u); err != nil {
+		return c.String(http.StatusBadRequest, "bad request")
 	}
+	database.DB.Find(&u)
 	return c.JSON(http.StatusOK, u)
 }
 
@@ -58,27 +62,67 @@ func RegisterUser(c echo.Context) error {
 			OperatorId:   5,
 			OperatorName: "ciucarp",
 		}
-		log.Print(validateUser)
 		url := "http://169.51.195.62:30174/apis/registerCitizen"
-		log.Print("tongo")
 		jsonData, err := json.Marshal(validateUser)
 		if err != nil {
 			return err
 		}
-		log.Print("rongo")
+
 		regResp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 		if err != nil {
 			return err
 		}
-		log.Print("fongo")
-		log.Print(regResp.StatusCode)
+
 		if regResp.StatusCode != http.StatusCreated {
 			return fmt.Errorf("la solicitud POST no fue exitosa. Código de estado: %d", resp.StatusCode)
 		}
-		log.Print("nongo")
+
 		database.DB.Create(u)
 
 		return c.JSON(regResp.StatusCode, u)
 	}
-	return nil
+	return c.JSON(http.StatusBadRequest, u)
+}
+
+func GetArchives(c echo.Context) error {
+	var archives []models.Archive
+	database.DB.Find(&archives)
+	return c.JSON(http.StatusOK, archives)
+}
+
+func PostArchive(c echo.Context) error {
+	a := new(models.Archive)
+	if err := c.Bind(a); err != nil {
+		return c.String(http.StatusBadRequest, "bad request")
+	}
+	database.DB.Create(&a)
+	return c.JSON(http.StatusOK, a)
+}
+
+func UploadArchive(c echo.Context) error {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return err
+	}
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	dst, err := os.Create("/Public/" + file.Filename)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	if _, err = io.Copy(dst, src); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message":  "Archivo cargado exitosamente",
+		"filename": file.Filename,
+		"size":     file.Size,
+	})
 }

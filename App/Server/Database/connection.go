@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var DNS = "host=localhost user=user password=secret dbname=cap port=5432"
+var DNS = "host=localhost user=user password=secret dbname=ciucap port=5432"
 var DB *gorm.DB
 
 func DBConnection() {

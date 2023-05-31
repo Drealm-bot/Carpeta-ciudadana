@@ -5,8 +5,8 @@ import "gorm.io/gorm"
 type Archive struct {
 	gorm.Model
 
-	UserID uint   `json:"userId" xml:"userId"`
-	Name   string `json:"name" xml:"name"`
-	Type   string `json:"type" xml:"type"`
-	Path   string `json:"path" xml:"path"`
+	UserID uint   `gorm:"not null"`
+	Name   string `gorm:"not null"`
+	Type   string `gorm:"not null"`
+	Path   string `gorm:"not null"`
 }

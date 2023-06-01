@@ -32,7 +32,7 @@ func main() {
 	app := echo.New()
 	app.Use(middleware.CORS())
 	app.Use(middleware.Logger())
-	/*app.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+	app.Use(middleware.JWTWithConfig(middleware.JWTConfig{
 		SigningKey: []byte("secret"),
 		Skipper: func(c echo.Context) bool {
 			// Skip authentication for signup and login requests
@@ -41,7 +41,7 @@ func main() {
 			}
 			return false
 		},
-	}))*/
+	}))
 
 	routes.UserRoutes(app, c, userController)
 	routes.ArchiveRoutes(app, c, archiveController)

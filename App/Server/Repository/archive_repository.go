@@ -17,6 +17,10 @@ func (ar *ArchiveRepository) CreateArchive(a *models.Archive) error {
 	return ar.db.Create(&a).Error
 }
 
+func (ar *ArchiveRepository) UpdateArchive(a *models.Archive) error {
+	return ar.db.Save(&a).Error
+}
+
 func (ar *ArchiveRepository) GetArchiveByCivIDAndFileName(civId string, fileName string) (*models.Archive, error) {
 	f := new(models.Archive)
 	if err := ar.db.Where("owner = ? AND full_name = ?", civId, fileName).First(&f).Error; err != nil {

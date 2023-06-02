@@ -36,7 +36,7 @@ func main() {
 		SigningKey: []byte("secret"),
 		Skipper: func(c echo.Context) bool {
 			// Skip authentication for signup and login requests
-			if c.Path() == "/login" || c.Path() == "/generate" || c.Path() == "/signup" || c.Path() == "/repository/:id/upload" || c.Path() == "/" {
+			if c.Path() == "/login" || c.Path() == "/generate" || c.Path() == "/signup" || c.Path() == "/" {
 				return true
 			}
 			return false
@@ -45,6 +45,7 @@ func main() {
 
 	routes.UserRoutes(app, c, userController)
 	routes.ArchiveRoutes(app, c, archiveController)
+	app.Static("/", "public")
 	app.Logger.Fatal(app.Start(":3000"))
 	fmt.Print()
 }

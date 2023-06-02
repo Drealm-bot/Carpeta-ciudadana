@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	controller "github.com/Drealm-bot/Carpeta-ciudadana.git/Controllers/Utils"
 	models "github.com/Drealm-bot/Carpeta-ciudadana.git/Models"
 	repository "github.com/Drealm-bot/Carpeta-ciudadana.git/Repository"
 )
@@ -57,6 +59,26 @@ func (as *ArchiveService) UploadArchive(civId int, file *multipart.FileHeader) (
 
 	as.archiveRepository.CreateArchive(&a)
 	return http.StatusCreated, nil
+}
+
+func (as *ArchiveService) AuthenticateArchive(civId string, fileName string) (int, error) {
+	archive, err := as.archiveRepository.GetArchiveByCivIDAndFileName(civId, fileName)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	fullPath := strings.ReplaceAll(archive.Path, "/", "%2F")
+	name := archive.Name
+	request := civId + "/" + fullPath + "/" + name
+	fmt.Println(controller.AuthenticateDocument + request)
+	resp, err := http.Get(controller.AuthenticateDocument + request)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	archive.IsAuthenticated = true
+	if err := as.archiveRepository.UpdateArchive(archive); err != nil {
+		return http.StatusInternalServerError, err
+	}
+	return resp.StatusCode, nil
 }
 
 func (as *ArchiveService) FindArchive(id string, fileName string) (string, string) {

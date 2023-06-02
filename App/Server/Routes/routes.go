@@ -18,4 +18,5 @@ func ArchiveRoutes(app *echo.Echo, c context.Context, controller *controller.Arc
 	app.POST("/repository/:id/upload", controller.UploadArchive)
 	app.GET("/repository/:id/*", controller.ServeArchive)
 	app.GET("/repository/:id/download/*", controller.DownloadArchive)
+	app.GET("/repository/:id/authenticate/*", controller.AuthenticateArchive)
 }

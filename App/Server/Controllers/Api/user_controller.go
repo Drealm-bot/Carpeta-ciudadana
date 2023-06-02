@@ -52,7 +52,11 @@ func (uc *UserController) GenerateUserPassword(c echo.Context) error {
 		return c.JSON(resp, err)
 	}
 
-	return c.JSON(http.StatusCreated, gi)
+	return c.JSON(http.StatusCreated, map[string]interface{}{
+		"message": "Contraseña generada exitosamente",
+		"send to": gi.Email,
+		"ID":      gi.CivID,
+	})
 }
 
 func (uc *UserController) LoginUser(c echo.Context) error {
@@ -65,5 +69,9 @@ func (uc *UserController) LoginUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	return c.JSON(http.StatusCreated, u)
+	return c.JSON(http.StatusCreated, map[string]interface{}{
+		"message": "El usuario ha ingresado exitosamente",
+		"id":      u.CivID,
+		"token":   u.Token,
+	})
 }

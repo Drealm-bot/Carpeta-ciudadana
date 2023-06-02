@@ -5,6 +5,8 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"log"
 	"mime"
 	"net/http"
@@ -49,8 +51,8 @@ func (us *UserService) RegisterUser(u *models.User) (int, error) {
 			Name:         u.Name,
 			Address:      u.Address,
 			Email:        u.Email,
-			OperatorId:   5,
-			OperatorName: "ciucarp",
+			OperatorId:   controller.OperatorId,
+			OperatorName: controller.OperatorName,
 		}
 		url := controller.RegisterCitizen
 		jsonData, err := json.Marshal(validateUser)
@@ -111,12 +113,15 @@ func (us *UserService) GenerateUserPassword(gi models.GenerativeInfo) (int, erro
 }
 
 func (us *UserService) LoginUser(li models.LoginInfo) (*models.User, error) {
+	fmt.Println("tongo")
 	u, err := us.userRepository.GetUserByCivIDAndPassword(li.CivID, li.Password)
+	fmt.Println("tongo")
 	if err != nil {
 		return nil, err
 	}
 
 	if u.PasswordCreatedAt != nil && time.Since(*u.PasswordCreatedAt) <= 5*time.Minute {
+		fmt.Println("tongo")
 		token := jwt.New(jwt.SigningMethodHS256)
 		claims := token.Claims.(jwt.MapClaims)
 		claims["id"] = u.ID
@@ -130,7 +135,7 @@ func (us *UserService) LoginUser(li models.LoginInfo) (*models.User, error) {
 		return u, nil
 	}
 
-	return nil, err
+	return nil, errors.New("El usuario ha ingresado exitosamente")
 }
 
 func GenerateRandomPassword(length int) string {

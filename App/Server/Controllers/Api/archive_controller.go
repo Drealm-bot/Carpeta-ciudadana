@@ -50,3 +50,14 @@ func (ac *ArchiveController) DownloadArchive(c echo.Context) error {
 	fullPath, name := ac.archiveService.FindArchive(id, fileName)
 	return c.Attachment(fullPath, name)
 }
+
+func (ac *ArchiveController) AuthenticateArchive(c echo.Context) error {
+	id := c.Param("id")
+	fileName := c.Param("*")
+	resp, err := ac.archiveService.AuthenticateArchive(id, fileName)
+	if err != nil {
+		return c.JSON(resp, err)
+	}
+	return c.JSON(resp, map[string]interface{}{
+		"message": "Archivo autenticado correctamente."})
+}

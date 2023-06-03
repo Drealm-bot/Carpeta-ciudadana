@@ -25,18 +25,19 @@ func NewArchiveService(ar *repository.ArchiveRepository) *ArchiveService {
 }
 
 func (as *ArchiveService) UploadArchive(civId int, file *multipart.FileHeader) (int, error) {
+	fmt.Println("tongo")
 	src, err := file.Open()
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 	defer src.Close()
-
+	fmt.Println("tongo")
 	dirPath := "repository/" + strconv.Itoa(civId)
 	err = os.MkdirAll(dirPath, os.ModePerm)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
-
+	fmt.Println("tongo")
 	filePath := dirPath + "/" + file.Filename
 	dst, err := os.Create(filePath)
 	if err != nil {

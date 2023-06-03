@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -19,14 +20,17 @@ func NewUserController(userService *service.UserService) *UserController {
 
 func (uc *UserController) RegisterUser(c echo.Context) error {
 	u := new(models.User)
-
+	fmt.Println("tongo")
 	if err := c.Bind(&u); err != nil {
-		return c.String(http.StatusBadRequest, "bad request")
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
 	}
+	fmt.Print(u)
+	fmt.Println("tongo")
 	status, err := uc.userService.RegisterUser(u)
 	if err != nil {
 		return c.JSON(status, err)
 	}
+	fmt.Println("tongo")
 	return c.JSON(status, u)
 }
 
